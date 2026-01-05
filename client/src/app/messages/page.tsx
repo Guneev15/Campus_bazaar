@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, User as UserIcon, MessageSquare } from "lucide-react";
+import { Send, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
