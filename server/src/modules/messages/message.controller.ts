@@ -24,3 +24,22 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getThread = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user.id;
+        const { partner_id, listing_id } = req.query;
+        
+        if (!partner_id || !listing_id) {
+             // return res.status(400).json({ error: 'Missing partner_id or listing_id' }); 
+             // Typescript void return issue fix
+             res.status(400).json({ error: 'Missing partner_id or listing_id' });
+             return;
+        }
+
+        const thread = await messageService.getThread(userId, partner_id as string, listing_id as string);
+        res.json(thread);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};

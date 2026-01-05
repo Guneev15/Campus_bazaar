@@ -6,5 +6,6 @@ const router = Router();
 
 router.post('/', authenticate, messageController.sendMessage as any);
 router.get('/', authenticate, messageController.getConversations as any);
+router.get('/thread', authenticate, messageController.getThread as any);
 
 export default router;
