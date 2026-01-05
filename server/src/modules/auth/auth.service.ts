@@ -50,8 +50,9 @@ export const registerUser = async (userData: CreateUserDto) => {
         [email, otp]
     );
 
-    // Send Real OTP Email
-    await sendOTPEmail(email, otp);
+    // Send Real OTP Email (Non-blocking)
+    // We do NOT await this, so the UI doesn't hang if SMTP is slow/blocked.
+    sendOTPEmail(email, otp).catch(err => console.error("Background Email Warning:", err));
 
     await client.query('COMMIT');
     return { ...result.rows[0], message: 'OTP sent to email' };
