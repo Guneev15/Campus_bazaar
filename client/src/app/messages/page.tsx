@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+// import { ScrollArea } from "@/components/ui/scroll-area"; // Removed: Component missing
 import { Send, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -118,7 +118,7 @@ export default function MessagesPage() {
                   <MessageSquare className="h-5 w-5" /> Chats
               </h2>
           </div>
-          <ScrollArea className="flex-1">
+          <div className="flex-1 overflow-y-auto">
               <div className="divide-y">
                   {loading ? (
                       <p className="p-4 text-center text-muted-foreground">Loading...</p>
@@ -146,7 +146,7 @@ export default function MessagesPage() {
                       ))
                   )}
               </div>
-          </ScrollArea>
+          </div>
       </Card>
 
       {/* Main: Chat Window */}
