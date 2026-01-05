@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Need to check if tabs component exists or use simple state
+// Tabs import removed to fix build error (using state instead)
 import { Check, X } from "lucide-react";
 
 export default function AdminDashboard() {
