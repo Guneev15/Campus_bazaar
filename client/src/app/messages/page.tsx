@@ -109,8 +109,6 @@ export default function MessagesPage() {
 
   if (!isAuthenticated) return <div className="p-10 text-center">Please login to view messages.</div>;
 
-import { ArrowLeft } from "lucide-react"; // Import ArrowLeft
-
 // ... inside the component return ...
 
   return (
