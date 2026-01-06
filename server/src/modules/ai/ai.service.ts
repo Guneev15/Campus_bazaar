@@ -80,8 +80,8 @@ export const generateListingInfo = async (
         "X-Title": "Campus Bazaar",
       },
       body: JSON.stringify({
-        "model": "openai/gpt-4o", // Reverted to known valid model
-        "max_tokens": 1000, // Limit tokens to avoid "Payment Required" errors on free accounts
+        "model": "google/gemini-2.0-flash-exp:free", // Back to free model
+        "max_tokens": 1000, 
         "temperature": 0.7,
         "messages": [
           {
@@ -104,8 +104,34 @@ export const generateListingInfo = async (
     });
 
     if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`OpenRouter API Error: ${response.status} ${response.statusText} - ${errText}`);
+        console.warn(`Primary model failed: ${response.status}. Retrying with backup...`);
+        // Fallback to older stable model if experimental free one fails
+        const backupResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": process.env.CLIENT_URL || "https://campus-bazaar.vercel.app",
+                "X-Title": "Campus Bazaar",
+            },
+            body: JSON.stringify({
+                "model": "google/gemini-2.0-flash-thinking-exp:free", // Backup free model
+                "max_tokens": 1000,
+                "messages": [{
+                    "role": "user",
+                     "content": [
+                        { "type": "text", "text": prompt },
+                        { "type": "image_url", "image_url": { "url": dataUrl } }
+                    ]
+                }]
+            })
+        });
+
+        if (!backupResponse.ok) {
+             const errText = await backupResponse.text();
+             throw new Error(`OpenRouter API Error (Backup): ${backupResponse.status} - ${errText}`);
+        }
+        return (await backupResponse.json()) as any;
     }
 
     const data = await response.json();
