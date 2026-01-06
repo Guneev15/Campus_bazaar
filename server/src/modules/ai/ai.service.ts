@@ -21,11 +21,14 @@ export const generateListingInfo = async (
   condition: string
 ): Promise<AIAnalysisResult> => {
 
-  const apiKey = process.env.OPENROUTER_API_KEY || process.env.GEMINI_API_KEY;
+  let apiKey = process.env.OPENROUTER_API_KEY || process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     throw new Error("API Key is missing (OPENROUTER_API_KEY)");
   }
+  
+  // Sanitize key: remove whitespace and accidental quotes
+  apiKey = apiKey.trim().replace(/^["']|["']$/g, '');
 
   const prompt = `
     Role: Expert College Marketplace Risk Analyst & Copywriter.
@@ -126,7 +129,9 @@ async function callOpenRouterAPI(apiKey: string, prompt: string, base64Image: st
     // For stability with generic keys, we default to a known working model.
     const model = "google/gemini-2.0-flash-exp:free"; 
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    console.log(`OpenRouter: Attempting primary model ${model}...`);
+    
+    let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -151,9 +156,38 @@ async function callOpenRouterAPI(apiKey: string, prompt: string, base64Image: st
     });
 
     if (!response.ok) {
-        const errText = await response.text();
-        // Fallback logic could go here, but keeping it simple for now as we just fixed the key issue
-        throw new Error(`OpenRouter API Error: ${response.status} - ${errText}`);
+        console.warn(`Primary model failed (${response.status}). Attempting backup...`);
+        
+        // Backup: Try a different free model or a paid one if available
+        const backupModel = "google/gemini-2.0-flash-thinking-exp:free";
+        
+        response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": process.env.CLIENT_URL || "https://campus-bazaar.vercel.app",
+                "X-Title": "Campus Bazaar",
+            },
+            body: JSON.stringify({
+                "model": backupModel,
+                "max_tokens": 1000,
+                "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                    { "type": "text", "text": prompt },
+                    { "type": "image_url", "image_url": { "url": dataUrl } }
+                    ]
+                }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+             const errText = await response.text();
+             throw new Error(`OpenRouter API Error (Backup failed): ${response.status} - ${errText}`);
+        }
     }
 
     const data = await response.json();
