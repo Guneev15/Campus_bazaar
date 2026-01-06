@@ -94,16 +94,16 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
             </p>
         </CardContent>
         
-        <CardFooter className="gap-2 px-5 pb-5 pt-0">
-            <Link href={`/listings/${listing.id}`} className="w-full">
-                <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-colors duration-300 font-medium rounded-xl shadow-lg shadow-slate-900/20 dark:shadow-none">
+        <CardFooter className="flex gap-2 px-5 pb-5 pt-0">
+            <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
+                <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-colors duration-300 font-medium rounded-xl shadow-lg shadow-slate-900/20 dark:shadow-none whitespace-nowrap">
                     View Details
                 </Button>
             </Link>
             {isOwner && (
-                <>
+                <div className="flex gap-2 shrink-0">
                     <Button
-                        variant={listing.status === 'SOLD' ? "outline" : "default"}
+                        variant={listing.status === 'SOLD' ? "outline" : "secondary"}
                         size="sm"
                         onClick={async (e) => {
                             e.preventDefault();
@@ -116,21 +116,21 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
                                 console.error("Failed to update status");
                             }
                         }}
-                        className={listing.status === 'SOLD' ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}
-                        title={listing.status === 'SOLD' ? "Mark as Available" : "Mark as Sold"}
+                        className={listing.status === 'SOLD' ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}
+                        title={listing.status === 'SOLD' ? "Mark as Active" : "Mark as Sold"}
                     >
-                        {listing.status === 'SOLD' ? "Relist" : "Sold"}
+                        {listing.status === 'SOLD' ? "Relist" : "Mark Sold"}
                     </Button>
                     <Button 
                         variant="destructive" 
                         size="icon" 
                         onClick={handleDelete} 
                         title="Delete Listing"
-                        className="rounded-xl shadow-md hover:shadow-red-500/20 shrink-0"
+                        className="rounded-xl shadow-md hover:shadow-red-500/20"
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>
-                </>
+                </div>
             )}
         </CardFooter>
         </Card>
