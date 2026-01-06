@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { ScrollArea } from "@/components/ui/scroll-area"; // Removed: Component missing
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -109,10 +109,18 @@ export default function MessagesPage() {
 
   if (!isAuthenticated) return <div className="p-10 text-center">Please login to view messages.</div>;
 
+import { ArrowLeft } from "lucide-react"; // Import ArrowLeft
+
+// ... inside the component return ...
+
   return (
-    <div className="container mx-auto py-6 h-[85vh] flex gap-4">
+    <div className="container mx-auto py-4 md:py-6 h-[85vh] flex gap-4">
       {/* Sidebar: Conversation List */}
-      <Card className="w-1/3 flex flex-col h-full overflow-hidden border-border bg-card">
+      <Card className={cn(
+          "flex flex-col h-full overflow-hidden border-border bg-card transition-all duration-300",
+          "w-full md:w-1/3", 
+          selectedThread ? "hidden md:flex" : "flex"
+      )}>
           <div className="p-4 border-b bg-muted/40">
               <h2 className="font-semibold text-lg flex items-center gap-2 text-foreground">
                   <MessageSquare className="h-5 w-5" /> Chats
@@ -154,29 +162,44 @@ export default function MessagesPage() {
       </Card>
 
       {/* Main: Chat Window */}
-      <Card className="flex-1 flex flex-col h-full overflow-hidden border-border bg-card">
+      <Card className={cn(
+          "flex-1 flex-col h-full overflow-hidden border-border bg-card transition-all duration-300",
+          selectedThread ? "flex" : "hidden md:flex"
+      )}>
           {selectedThread ? (
               <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b flex justify-between items-center bg-muted/40">
-                      <div>
-                          <h3 className="font-bold flex items-center gap-2 text-foreground">
-                              {selectedThread.partner_name || selectedThread.partner_email}
-                          </h3>
-                          <p className="text-xs text-muted-foreground">
-                              Re: <strong>{selectedThread.listing_title}</strong> (₹{selectedThread.listing_price})
-                          </p>
+                  <div className="p-3 md:p-4 border-b flex justify-between items-center bg-muted/40">
+                      <div className="flex items-center gap-3">
+                          {/* Back Button (Mobile Only) */}
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="md:hidden -ml-2 h-8 w-8"
+                            onClick={() => setSelectedThread(null)}
+                          >
+                              <ArrowLeft className="h-5 w-5" />
+                          </Button>
+                          
+                          <div>
+                              <h3 className="font-bold flex items-center gap-2 text-foreground text-sm md:text-base">
+                                  {selectedThread.partner_name || selectedThread.partner_email}
+                              </h3>
+                              <p className="text-[10px] md:text-xs text-muted-foreground">
+                                  Re: <strong>{selectedThread.listing_title}</strong> (₹{selectedThread.listing_price})
+                              </p>
+                          </div>
                       </div>
                   </div>
 
                   {/* Messages Area */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-background/50">
+                  <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 bg-background/50">
                       {messages.map((msg) => {
                           const isMe = msg.sender_id === user?.id;
                           return (
                               <div key={msg.id} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
                                   <div className={cn(
-                                      "max-w-[70%] rounded-lg p-3 text-sm shadow-sm",
+                                      "max-w-[80%] md:max-w-[70%] rounded-lg p-3 text-sm shadow-sm",
                                       isMe 
                                         ? "bg-primary text-primary-foreground" 
                                         : "bg-muted border border-border text-foreground"
@@ -196,7 +219,7 @@ export default function MessagesPage() {
                   </div>
 
                   {/* Input Area */}
-                  <div className="p-4 border-t bg-card">
+                  <div className="p-3 md:p-4 border-t bg-card">
                       <form onSubmit={handleSendMessage} className="flex gap-2">
                           <Input 
                               value={newMessage}
@@ -211,7 +234,7 @@ export default function MessagesPage() {
                   </div>
               </>
           ) : (
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground bg-muted/10">
+              <div className="hidden md:flex flex-col items-center justify-center h-full text-muted-foreground bg-muted/10">
                   <MessageSquare className="h-12 w-12 mb-4 opacity-20" />
                   <p>Select a conversation to start chatting</p>
               </div>

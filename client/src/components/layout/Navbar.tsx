@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, User, LogOut, Home } from "lucide-react";
+import { ShoppingBag, User, LogOut, Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+    setIsMobileMenuOpen(false);
     router.push("/login");
   };
 
@@ -27,7 +30,8 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-4">
           {isAuthenticated ? (
             <>
               <Link href="/listings/create">
@@ -67,7 +71,61 @@ export function Navbar() {
             </>
           )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 absolute w-full left-0 animate-in slide-in-from-top-5 fade-in duration-200 shadow-xl">
+            <div className="p-4 flex flex-col gap-4">
+                {isAuthenticated ? (
+                    <>
+                        <div className="flex items-center gap-3 px-2 pb-2 border-b dark:border-slate-800">
+                             <div className="bg-primary/10 p-2 rounded-full">
+                                <User className="h-5 w-5 text-primary" />
+                             </div>
+                             <div>
+                                 <p className="font-semibold text-sm">{user?.name}</p>
+                                 <p className="text-xs text-muted-foreground">{user?.email}</p>
+                             </div>
+                        </div>
+                        <Link href="/listings/create" onClick={() => setIsMobileMenuOpen(false)}>
+                            <Button className="w-full justify-start" variant="outline">
+                                Sell Item
+                            </Button>
+                        </Link>
+                        <Link href="/messages" onClick={() => setIsMobileMenuOpen(false)}>
+                            <Button className="w-full justify-start" variant="ghost">
+                                Messages
+                            </Button>
+                        </Link>
+                        <Button 
+                            variant="destructive" 
+                            className="w-full justify-start"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="h-4 w-4 mr-2" /> Logout
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                            <Button variant="ghost" className="w-full justify-start">Login</Button>
+                        </Link>
+                        <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                            <Button className="w-full">Get Started</Button>
+                        </Link>
+                    </>
+                )}
+            </div>
+        </div>
+      )}
     </nav>
   );
 }
