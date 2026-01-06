@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -27,6 +28,7 @@ interface ListingCardProps {
 export function ListingCard({ listing, index = 0 }: ListingCardProps) {
   const { user } = useAuthStore();
   const isOwner = user?.id === listing.seller_id;
+  const [currentStatus, setCurrentStatus] = useState<'ACTIVE' | 'SOLD'>(listing.status);
 
   const handleDelete = async (e: React.MouseEvent) => {
       e.preventDefault(); // Prevent link navigation
@@ -55,7 +57,7 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
             <img
               src={listing.image_url ? (listing.image_url.startsWith('http') ? listing.image_url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${listing.image_url}`) : '/placeholder-image.jpg'}
               alt={listing.title}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${currentStatus === 'SOLD' ? 'grayscale opacity-70' : ''}`}
             />
             {/* Price Tag Overlay */}
             <motion.div 
@@ -80,9 +82,9 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
         </CardHeader>
         
         {/* Sold Overlay */}
-        {listing.status === 'SOLD' && (
-            <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center">
-                <span className="text-white font-extrabold text-2xl tracking-widest border-4 border-white px-4 py-1 -rotate-12 transform opacity-80">
+        {currentStatus === 'SOLD' && (
+            <div className={`absolute inset-0 z-20 flex items-center justify-center pointer-events-none ${isOwner ? 'bg-black/20' : 'bg-black/50'}`}>
+                <span className="text-white font-extrabold text-2xl tracking-widest border-4 border-white px-4 py-1 -rotate-12 transform opacity-80 backdrop-blur-sm">
                     SOLD
                 </span>
             </div>
@@ -96,37 +98,40 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
         
         <CardFooter className="flex gap-2 px-5 pb-5 pt-0 items-center">
             {/* View Details - Primary Action */}
-            <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
+            <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0 z-30">
                 <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 font-medium rounded-xl shadow-md hover:shadow-lg shadow-slate-900/10 dark:shadow-none whitespace-nowrap">
                     View Details
                 </Button>
             </Link>
 
             {isOwner && (
-                <div className="flex gap-1 shrink-0 items-center">
+                <div className="flex gap-1 shrink-0 items-center z-30">
                     {/* Mark Sold / Relist */}
                     <Button
-                        variant={listing.status === 'SOLD' ? "outline" : "secondary"}
+                        variant={currentStatus === 'SOLD' ? "outline" : "secondary"}
                         size="sm"
                         onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             try {
-                                const newStatus = listing.status === 'SOLD' ? 'ACTIVE' : 'SOLD';
+                                const newStatus = currentStatus === 'SOLD' ? 'ACTIVE' : 'SOLD';
+                                // Optimistic update
+                                setCurrentStatus(newStatus);
                                 await api.put(`/listings/${listing.id}/status`, { status: newStatus });
-                                window.location.reload();
                             } catch (err) {
                                 console.error("Failed to update status");
+                                // Revert on failure
+                                setCurrentStatus(currentStatus);
                             }
                         }}
                         className={`font-medium rounded-lg transition-colors ${
-                            listing.status === 'SOLD' 
+                            currentStatus === 'SOLD' 
                             ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" 
                             : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
                         }`}
-                        title={listing.status === 'SOLD' ? "Mark as Active" : "Mark as Sold"}
+                        title={currentStatus === 'SOLD' ? "Mark as Active" : "Mark as Sold"}
                     >
-                        {listing.status === 'SOLD' ? "Relist" : "Mark Sold"}
+                        {currentStatus === 'SOLD' ? "Relist" : "Mark Sold"}
                     </Button>
 
                     {/* Delete - Minimal Icon */}

@@ -38,7 +38,7 @@ export const createListing = async (listingData: any) => {
 };
 
 export const getListings = async (filters: any) => {
-  let query = 'SELECT * FROM listings WHERE status = \'ACTIVE\'';
+  let query = 'SELECT * FROM listings WHERE 1=1';
   const values: any[] = [];
   
   if (filters.category_id) {
@@ -61,7 +61,8 @@ export const getListings = async (filters: any) => {
     query += ` AND price <= $${values.length}`;
   }
 
-  query += ' ORDER BY created_at DESC';
+  // Active listings first, then by date
+  query += ' ORDER BY status ASC, created_at DESC';
 
   const result = await pool.query(query, values);
   return result.rows;
