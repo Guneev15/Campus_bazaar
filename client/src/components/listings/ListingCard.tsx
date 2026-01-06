@@ -100,7 +100,7 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
             {/* View Details - Primary Action */}
             <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0 z-30">
                 <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 font-medium rounded-xl shadow-md hover:shadow-lg shadow-slate-900/10 dark:shadow-none whitespace-nowrap">
-                    View Details
+                    Details
                 </Button>
             </Link>
 

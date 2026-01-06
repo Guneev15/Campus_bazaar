@@ -281,6 +281,21 @@ export default function CreateListingPage() {
             </div>
 
             <div className="space-y-2">
+                <Label htmlFor="condition">Condition</Label>
+                <select 
+                    id="condition" 
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                    {...form.register("condition")}
+                >
+                    <option value="USED">Used</option>
+                    <option value="NEW">New</option>
+                    <option value="LIKE_NEW">Like New</option>
+                    <option value="GOOD">Good</option>
+                    <option value="FAIR">Fair</option>
+                </select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="price">Price (₹)</Label>
               <Input id="price" type="number" step="0.01" placeholder="0.00" {...form.register("price")} />
               {form.formState.errors.price && <p className="text-red-500 text-sm">{form.formState.errors.price.message}</p>}

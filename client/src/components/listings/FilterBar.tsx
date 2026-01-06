@@ -62,7 +62,7 @@ export function FilterBar({ categories, onFilterChange }: FilterBarProps) {
           <div>
               <label className="text-xs font-medium mb-1 block">Category</label>
               <select 
-                  className="w-full text-sm p-2 rounded-md border"
+                  className="w-full text-sm p-2 rounded-md border border-input bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 focus:ring-2 focus:ring-primary/20 outline-none transition-colors"
                   value={filters.category_id}
                   onChange={(e) => handleChange('category_id', e.target.value)}
               >
@@ -74,7 +74,7 @@ export function FilterBar({ categories, onFilterChange }: FilterBarProps) {
           <div>
               <label className="text-xs font-medium mb-1 block">Condition</label>
               <select 
-                   className="w-full text-sm p-2 rounded-md border"
+                   className="w-full text-sm p-2 rounded-md border border-input bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 focus:ring-2 focus:ring-primary/20 outline-none transition-colors"
                    value={filters.condition}
                    onChange={(e) => handleChange('condition', e.target.value)}
               >
