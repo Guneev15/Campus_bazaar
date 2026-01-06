@@ -80,7 +80,7 @@ export const generateListingInfo = async (
         "X-Title": "Campus Bazaar",
       },
       body: JSON.stringify({
-        "model": "openai/gpt-5.2", // Updated as requested
+        "model": "openai/gpt-4o", // Reverted to known valid model
         "max_tokens": 1000, // Limit tokens to avoid "Payment Required" errors on free accounts
         "temperature": 0.7,
         "messages": [
