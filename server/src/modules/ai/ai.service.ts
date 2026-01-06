@@ -21,8 +21,10 @@ export const generateListingInfo = async (
   condition: string
 ): Promise<AIAnalysisResult> => {
 
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("API Key is missing (GEMINI_API_KEY)");
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("API Key is missing (OPENROUTER_API_KEY)");
   }
 
   const prompt = `
@@ -72,13 +74,13 @@ export const generateListingInfo = async (
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.GEMINI_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000", // Required by OpenRouter
-        "X-Title": "Campus Bazaar", // Required by OpenRouter
+        "HTTP-Referer": process.env.CLIENT_URL || "https://campus-bazaar.vercel.app", // Use prod URL
+        "X-Title": "Campus Bazaar",
       },
       body: JSON.stringify({
-        "model": "google/gemini-3-flash-preview", 
+        "model": "openai/gpt-5.2", // Updated as requested
         "max_tokens": 1000, // Limit tokens to avoid "Payment Required" errors on free accounts
         "temperature": 0.7,
         "messages": [
