@@ -118,7 +118,10 @@ export default function Home() {
             {/* Tab Controls */}
             <div className="flex p-1.5 bg-slate-100 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
                 <button
-                    onClick={() => setActiveTab('market')}
+                    onClick={() => {
+                        setActiveTab('market');
+                        fetchListings({}); // Clear filters to show everything in market
+                    }}
                     className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${
                         activeTab === 'market' 
                         ? "bg-white dark:bg-slate-800 text-primary shadow-md scale-105" 
@@ -128,7 +131,10 @@ export default function Home() {
                     Marketplace
                 </button>
                 <button
-                    onClick={() => setActiveTab('selling')}
+                    onClick={() => {
+                        setActiveTab('selling');
+                        fetchListings({}); // Clear filters ensures my listings aren't hidden by previous searches
+                    }}
                     className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${
                         activeTab === 'selling' 
                         ? "bg-white dark:bg-slate-800 text-primary shadow-md scale-105" 
