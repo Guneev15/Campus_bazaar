@@ -59,3 +59,41 @@ CREATE TABLE IF NOT EXISTS notes_metadata (
     is_approved BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Messages System
+CREATE TABLE IF NOT EXISTS messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sender_id UUID REFERENCES users(id),
+    receiver_id UUID REFERENCES users(id),
+    listing_id UUID REFERENCES listings(id),
+    content TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Reviews System
+CREATE TABLE IF NOT EXISTS reviews (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    reviewer_id UUID REFERENCES users(id),
+    target_id UUID REFERENCES users(id), -- The Seller
+    listing_id UUID REFERENCES listings(id),
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Notifications System
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    type VARCHAR(50) NOT NULL, -- 'MESSAGE', 'PRICE_DROP', 'REVIEW'
+    title VARCHAR(255),
+    message TEXT,
+    link VARCHAR(255),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Add Columns to Listings (Run these manually if table exists)
+-- ALTER TABLE listings ADD COLUMN IF NOT EXISTS condition VARCHAR(50) DEFAULT 'USED'; 
+-- ALTER TABLE listings ADD COLUMN IF NOT EXISTS tags TEXT[]; 

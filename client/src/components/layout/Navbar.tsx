@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, User, LogOut, Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { NotificationsPopover } from "@/components/notifications/NotificationsPopover";
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -44,6 +45,9 @@ export function Navbar() {
                     Messages
                 </Button>
               </Link>
+              
+              <NotificationsPopover />
+
               <div className="flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                 <User className="h-4 w-4 text-slate-500" />
                 <span className="text-slate-700 dark:text-slate-300">{user?.name || user?.email}</span>
