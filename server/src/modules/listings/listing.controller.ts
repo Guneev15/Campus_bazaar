@@ -46,4 +46,18 @@ export const deleteListing = async (req: AuthRequest, res: Response) => {
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }
+
+};
+
+export const updateStatus = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user.id;
+        const listingId = req.params.id;
+        const { status } = req.body;
+        
+        const updated = await listingService.updateListingStatus(listingId, userId, status);
+        res.json(updated);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
 };

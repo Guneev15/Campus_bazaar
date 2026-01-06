@@ -13,21 +13,40 @@ import { SlideUp } from "@/components/animations/SlideUp";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { FilterBar } from "@/components/listings/FilterBar";
+
 export default function Home() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'market' | 'selling'>('market');
   const [listings, setListings] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     fetchListings();
+    fetchCategories();
   }, []);
 
-  const fetchListings = async () => {
+  const fetchCategories = async () => {
+      try {
+          const res = await api.get('/categories');
+          setCategories(res.data);
+      } catch (e) {
+          console.error("Failed to load categories");
+      }
+  };
+
+  const fetchListings = async (filters: any = {}) => {
+    setLoading(true);
     try {
-      const response = await api.get("/listings");
+      // filters contains min_price, max_price, condition, category_id
+      // Clean empty values
+      const params = Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== ""));
+      const response = await api.get("/listings", { params });
       setListings(response.data);
+      setActiveFilters(filters);
     } catch (error) {
       console.error("Failed to fetch listings:", error);
     } finally {
@@ -120,6 +139,10 @@ export default function Home() {
                 </button>
             </div>
         </div>
+        
+        {activeTab === 'market' && (
+            <FilterBar categories={categories} onFilterChange={fetchListings} />
+        )}
 
         {loading ? (
            <div className="text-center py-12">Loading marketplace...</div>

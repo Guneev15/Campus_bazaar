@@ -1,7 +1,7 @@
 import pool from '../../config/db';
 
 export const createListing = async (listingData: any) => {
-  const { seller_id, title, description, price, type, category_id, attributes, notes_url, image_url } = listingData;
+  const { seller_id, title, description, price, type, category_id, attributes, notes_url, image_url, condition, tags } = listingData;
   
   const client = await pool.connect();
   
@@ -10,10 +10,10 @@ export const createListing = async (listingData: any) => {
     
     // 1. Create Listing
     const listingQuery = `
-      INSERT INTO listings (seller_id, title, description, price, type, category_id, attributes, image_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO listings (seller_id, title, description, price, type, category_id, attributes, image_url, condition, tags)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *`;
-    const listingValues = [seller_id, title, description, price, type, category_id, attributes, image_url];
+    const listingValues = [seller_id, title, description, price, type, category_id, attributes, image_url, condition || 'USED', tags || []];
     const listingResult = await client.query(listingQuery, listingValues);
     const listing = listingResult.rows[0];
 
@@ -44,6 +44,21 @@ export const getListings = async (filters: any) => {
   if (filters.category_id) {
     values.push(filters.category_id);
     query += ` AND category_id = $${values.length}`;
+  }
+
+  if (filters.condition) {
+    values.push(filters.condition);
+    query += ` AND condition = $${values.length}`;
+  }
+
+  if (filters.min_price) {
+    values.push(filters.min_price);
+    query += ` AND price >= $${values.length}`;
+  }
+
+  if (filters.max_price) {
+    values.push(filters.max_price);
+    query += ` AND price <= $${values.length}`;
   }
 
   query += ' ORDER BY created_at DESC';
@@ -92,6 +107,21 @@ export const deleteListing = async (listingId: string, userId: string, role: str
         await client.query('ROLLBACK');
         throw e;
     } finally {
-        client.release();
     }
+};
+
+export const updateListingStatus = async (id: string, seller_id: string, status: 'ACTIVE' | 'SOLD') => {
+  const result = await pool.query(
+    `UPDATE listings 
+     SET status = $1 
+     WHERE id = $2 AND seller_id = $3 
+     RETURNING *`,
+    [status, id, seller_id]
+  );
+  
+  if (result.rows.length === 0) {
+      throw new Error('Listing not found or unauthorized');
+  }
+  
+  return result.rows[0];
 };

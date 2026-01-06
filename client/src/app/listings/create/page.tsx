@@ -24,6 +24,7 @@ const listingSchema = z.object({
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
   category_id: z.string().uuid("Please select a category"),
   type: z.enum(["PHYSICAL", "DIGITAL"]),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR", "USED"]).optional(),
   notes_url: z.string().optional(),
   image_url: z.string().optional(),
 });

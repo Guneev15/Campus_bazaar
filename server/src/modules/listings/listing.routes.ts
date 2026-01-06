@@ -8,5 +8,6 @@ router.post('/', authenticate, listingController.createListing as any);
 router.get('/', listingController.getListings);
 router.get('/:id', listingController.getListingById as any);
 router.delete('/:id', authenticate, listingController.deleteListing as any);
+router.put('/:id/status', authenticate, listingController.updateStatus as any);
 
 export default router;

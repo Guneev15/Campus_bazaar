@@ -12,7 +12,9 @@ interface Listing {
   title: string;
   price: string | number;
   type: string;
+  status: 'ACTIVE' | 'SOLD';
   description: string;
+
   image_url?: string;
   created_at?: string;
 }
@@ -77,6 +79,15 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
             </div>
         </CardHeader>
         
+        {/* Sold Overlay */}
+        {listing.status === 'SOLD' && (
+            <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center">
+                <span className="text-white font-extrabold text-2xl tracking-widest border-4 border-white px-4 py-1 -rotate-12 transform opacity-80">
+                    SOLD
+                </span>
+            </div>
+        )}
+
         <CardContent className="flex-1 px-5">
             <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
             {listing.description}
@@ -90,15 +101,36 @@ export function ListingCard({ listing, index = 0 }: ListingCardProps) {
                 </Button>
             </Link>
             {isOwner && (
-                <Button 
-                    variant="destructive" 
-                    size="icon" 
-                    onClick={handleDelete} 
-                    title="Delete Listing"
-                    className="rounded-xl shadow-md hover:shadow-red-500/20"
-                >
-                    <Trash2 className="h-4 w-4" />
-                </Button>
+                <>
+                    <Button
+                        variant={listing.status === 'SOLD' ? "outline" : "default"}
+                        size="sm"
+                        onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            try {
+                                const newStatus = listing.status === 'SOLD' ? 'ACTIVE' : 'SOLD';
+                                await api.put(`/listings/${listing.id}/status`, { status: newStatus });
+                                window.location.reload();
+                            } catch (err) {
+                                console.error("Failed to update status");
+                            }
+                        }}
+                        className={listing.status === 'SOLD' ? "bg-green-50 text-green-600 border-green-200 hover:bg-green-100" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}
+                        title={listing.status === 'SOLD' ? "Mark as Available" : "Mark as Sold"}
+                    >
+                        {listing.status === 'SOLD' ? "Relist" : "Sold"}
+                    </Button>
+                    <Button 
+                        variant="destructive" 
+                        size="icon" 
+                        onClick={handleDelete} 
+                        title="Delete Listing"
+                        className="rounded-xl shadow-md hover:shadow-red-500/20 shrink-0"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </>
             )}
         </CardFooter>
         </Card>
