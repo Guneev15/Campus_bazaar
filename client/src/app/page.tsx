@@ -92,7 +92,7 @@ export default function Home() {
       {/* Listings Grid */}
       <section>
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50 w-full md:w-auto text-center md:text-left">
                 {activeTab === 'market' ? 'Recent Listings' : 'My Listings'}
             </h2>
             
