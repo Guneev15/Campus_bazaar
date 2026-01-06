@@ -112,9 +112,10 @@ export default function CreateListingPage() {
         }
 
         setAiResult(data);
-    } catch (err) {
+    } catch (err: any) {
         console.error("AI Generation failed", err);
-        alert("Failed to generate AI listing info. Please fill manually.");
+        const serverError = err.response?.data?.error || err.message;
+        alert(`Failed to generate: ${serverError}`);
     } finally {
         setAiLoading(false);
     }
