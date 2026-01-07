@@ -27,8 +27,10 @@ export const generateListingInfo = async (
     throw new Error("API Key is missing (OPENROUTER_API_KEY)");
   }
   
-  // Sanitize key: remove whitespace and accidental quotes
-  apiKey = apiKey.trim().replace(/^["']|["']$/g, '');
+  // Sanitize key: remove whitespace, quotes, and 'Bearer ' prefix
+  apiKey = apiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '');
+  
+  const keyPrefix = apiKey.substring(0, 5) + '...';
 
   const prompt = `
     Role: Expert College Marketplace Risk Analyst & Copywriter.
@@ -58,6 +60,9 @@ export const generateListingInfo = async (
        - Assign a Confidence Score (0-100) on how well you can see/identify the item.
        - If the image is blurry, irrelevant, or unsafe, set confidence < 50.
 
+    5. OUTPUT FORMAT:
+       Output strictly valid JSON.
+
     Output strictly in this JSON format (no markdown code blocks):
     {
       "description": "string",
@@ -72,16 +77,16 @@ export const generateListingInfo = async (
     const base64Image = imageBuffer.toString('base64');
 
     if (apiKey.startsWith('AIza')) {
-        console.log('Detected Google API Key. Using Google Direct API...');
+        console.log(`Detected Google API Key (${keyPrefix}). Using Google Direct API...`);
         return await callGoogleDirectAPI(apiKey, prompt, base64Image, mimeType);
     } else {
-        console.log('Detected OpenRouter/Other Key. Using OpenRouter API...');
+        console.log(`Detected OpenRouter/Other Key (${keyPrefix}). Using OpenRouter API...`);
         return await callOpenRouterAPI(apiKey, prompt, base64Image, mimeType);
     }
 
   } catch (error: any) {
     console.error("AI Generation Critical Error:", error);
-    throw new Error("Failed to generate AI analysis: " + error.message);
+    throw new Error(`Failed: ${error.message} (Key starts with: ${keyPrefix})`);
   }
 };
 
