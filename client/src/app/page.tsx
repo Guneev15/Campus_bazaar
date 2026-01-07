@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       {/* Hero / Search Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 border border-slate-800 shadow-2xl">
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
            <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary/30 rounded-full blur-3xl opacity-50 animate-pulse"></div>
