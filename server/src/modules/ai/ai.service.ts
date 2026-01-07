@@ -124,10 +124,8 @@ async function callGoogleDirectAPI(apiKey: string, prompt: string, base64Image: 
 async function callOpenRouterAPI(apiKey: string, prompt: string, base64Image: string, mimeType: string): Promise<AIAnalysisResult> {
     const dataUrl = `data:${mimeType};base64,${base64Image}`;
     
-    // User requested OpenAI, but we'll try free Gemini first if they are on free tier, 
-    // or just respect the request if valid.
-    // For stability with generic keys, we default to a known working model.
-    const model = "google/gemini-2.0-flash-exp:free"; 
+    // User explicitly requested Gemini 3 Flash Preview
+    const model = "google/gemini-3-flash-preview"; 
 
     console.log(`OpenRouter: Attempting primary model ${model}...`);
     
@@ -158,8 +156,8 @@ async function callOpenRouterAPI(apiKey: string, prompt: string, base64Image: st
     if (!response.ok) {
         console.warn(`Primary model failed (${response.status}). Attempting backup...`);
         
-        // Backup: Try a different free model or a paid one if available
-        const backupModel = "google/gemini-2.0-flash-thinking-exp:free";
+        // Backup: Use Llama 3.2 Vision (Free Tier)
+        const backupModel = "meta-llama/llama-3.2-11b-vision-instruct:free";
         
         response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
