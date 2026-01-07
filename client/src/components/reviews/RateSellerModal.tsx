@@ -2,11 +2,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner"; // Assuming sonner or similar toast is used, if not will replace
 
 interface RateSellerModalProps {
   isOpen: boolean;
@@ -91,11 +89,11 @@ export function RateSellerModal({ isOpen, onClose, sellerId, sellerName, listing
           </p>
 
           {/* Comment */}
-          <Textarea 
+          <textarea 
             placeholder="Describe your experience (optional)..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full h-24 resize-none bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:ring-primary"
+            className="w-full h-24 resize-none rounded-md border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 

@@ -129,8 +129,8 @@ async function callGoogleDirectAPI(apiKey: string, prompt: string, base64Image: 
 async function callOpenRouterAPI(apiKey: string, prompt: string, base64Image: string, mimeType: string): Promise<AIAnalysisResult> {
     const dataUrl = `data:${mimeType};base64,${base64Image}`;
     
-    // User explicitly requested Gemini 3 Flash Preview
-    const model = "google/gemini-3-flash-preview"; 
+    // User explicitly requested Claude Opus 4.5
+    const model = "anthropic/claude-opus-4.5"; 
 
     console.log(`OpenRouter: Attempting primary model ${model}...`);
     
